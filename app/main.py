@@ -55,3 +55,19 @@ def excluir_transacao(transacao_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Transação não encontrada")
     db.delete(transacao)
     db.commit()
+
+@app.put("/transacoes/{transacao_id}", response_model=schemas.TransacaoOut)
+def atualizar_transacao(
+    transacao_id: int, dados: schemas.TransacaoCreate, db: Session = Depends(get_db)
+):
+    transacao = db.get(models.Transacao, transacao_id)
+    if transacao is None:
+        raise HTTPException(status_code=404, detail="Transação não encontrada")
+    categoria = db.get(models.Categoria, dados.categoria_id)
+    if categoria is None:
+        raise HTTPException(status_code=404, detail="Categoria não encontrada")
+    for campo, valor in dados.model_dump().items():
+        setattr(transacao, campo, valor)
+    db.commit()
+    db.refresh(transacao)
+    return transacao
