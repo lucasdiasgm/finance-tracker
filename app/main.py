@@ -47,3 +47,11 @@ def criar_transacao(dados: schemas.TransacaoCreate, db: Session = Depends(get_db
 @app.get("/transacoes", response_model=list[schemas.TransacaoOut])
 def listar_transacoes(db: Session = Depends(get_db)):
     return db.scalars(select(models.Transacao)).all()
+
+@app.delete("/transacoes/{transacao_id}", status_code=204)
+def excluir_transacao(transacao_id: int, db: Session = Depends(get_db)):
+    transacao = db.get(models.Transacao, transacao_id)
+    if transacao is None:
+        raise HTTPException(status_code=404, detail="Transação não encontrada")
+    db.delete(transacao)
+    db.commit()
