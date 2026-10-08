@@ -30,3 +30,20 @@ def criar_categoria(dados: schemas.CategoriaCreate, db: Session = Depends(get_db
 @app.get("/categorias", response_model=list[schemas.CategoriaOut])
 def listar_categorias(db: Session = Depends(get_db)):
     return db.scalars(select(models.Categoria)).all()
+
+
+@app.post("/transacoes", response_model=schemas.TransacaoOut, status_code=201)
+def criar_transacao(dados: schemas.TransacaoCreate, db: Session = Depends(get_db)):
+    categoria = db.get(models.Categoria, dados.categoria_id)
+    if categoria is None:
+        raise HTTPException(status_code=404, detail="Categoria não encontrada")
+    transacao = models.Transacao(**dados.model_dump())
+    db.add(transacao)
+    db.commit()
+    db.refresh(transacao)
+    return transacao
+
+
+@app.get("/transacoes", response_model=list[schemas.TransacaoOut])
+def listar_transacoes(db: Session = Depends(get_db)):
+    return db.scalars(select(models.Transacao)).all()
