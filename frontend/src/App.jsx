@@ -30,6 +30,11 @@ export default function App() {
     carregar();
   }, []);
 
+  function nomeCategoria(id) {
+    const categoria = categorias.find((c) => c.id === id);
+    return categoria ? categoria.nome : "Sem categoria";
+  }
+
   function mudar(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
@@ -51,6 +56,17 @@ export default function App() {
       return;
     }
     setForm({ descricao: "", valor: "", data: "", categoria_id: "" });
+    carregar();
+  }
+
+  async function excluir(id) {
+    if (!window.confirm("Excluir esta transação?")) return;
+    setErro("");
+    const resposta = await fetch(`${API}/transacoes/${id}`, { method: "DELETE" });
+    if (!resposta.ok) {
+      setErro("Não foi possível excluir a transação.");
+      return;
+    }
     carregar();
   }
 
@@ -76,8 +92,9 @@ export default function App() {
       <h2>Transações</h2>
       <ul>
         {transacoes.map((t) => (
-          <li key={t.id}>
-            {t.data} - {t.descricao}: R$ {t.valor}
+          <li key={t.id} style={{ marginBottom: 6 }}>
+            {t.data} - {t.descricao} ({nomeCategoria(t.categoria_id)}): R$ {t.valor}{" "}
+            <button onClick={() => excluir(t.id)}>Excluir</button>
           </li>
         ))}
       </ul>
