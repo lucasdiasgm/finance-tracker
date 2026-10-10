@@ -6,34 +6,72 @@ export default function App() {
   const [categorias, setCategorias] = useState([]);
   const [transacoes, setTransacoes] = useState([]);
   const [erro, setErro] = useState("");
+  const [form, setForm] = useState({
+    descricao: "",
+    valor: "",
+    data: "",
+    categoria_id: "",
+  });
+
+  async function carregar() {
+    try {
+      const [resCat, resTr] = await Promise.all([
+        fetch(`${API}/categorias`),
+        fetch(`${API}/transacoes`),
+      ]);
+      setCategorias(await resCat.json());
+      setTransacoes(await resTr.json());
+    } catch {
+      setErro("Não foi possível falar com a API. O servidor está rodando?");
+    }
+  }
 
   useEffect(() => {
-    async function carregar() {
-      try {
-        const [resCat, resTr] = await Promise.all([
-          fetch(`${API}/categorias`),
-          fetch(`${API}/transacoes`),
-        ]);
-        setCategorias(await resCat.json());
-        setTransacoes(await resTr.json());
-      } catch {
-        setErro("Não foi possível falar com a API. O servidor está rodando?");
-      }
-    }
     carregar();
   }, []);
+
+  function mudar(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function enviar(e) {
+    e.preventDefault();
+    setErro("");
+    const resposta = await fetch(`${API}/transacoes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...form,
+        valor: Number(form.valor),
+        categoria_id: Number(form.categoria_id),
+      }),
+    });
+    if (!resposta.ok) {
+      setErro("Não foi possível salvar a transação.");
+      return;
+    }
+    setForm({ descricao: "", valor: "", data: "", categoria_id: "" });
+    carregar();
+  }
 
   return (
     <div style={{ maxWidth: 700, margin: "2rem auto", fontFamily: "sans-serif" }}>
       <h1>Finance Tracker</h1>
       {erro && <p style={{ color: "red" }}>{erro}</p>}
 
-      <h2>Categorias</h2>
-      <ul>
-        {categorias.map((c) => (
-          <li key={c.id}>{c.nome}</li>
-        ))}
-      </ul>
+      <h2>Nova transação</h2>
+      <form onSubmit={enviar} style={{ display: "grid", gap: 8 }}>
+        <input name="descricao" placeholder="Descrição" value={form.descricao} onChange={mudar} required />
+        <input name="valor" type="number" step="0.01" placeholder="Valor" value={form.valor} onChange={mudar} required />
+        <input name="data" type="date" value={form.data} onChange={mudar} required />
+        <select name="categoria_id" value={form.categoria_id} onChange={mudar} required>
+          <option value="">Categoria</option>
+          {categorias.map((c) => (
+            <option key={c.id} value={c.id}>{c.nome}</option>
+          ))}
+        </select>
+        <button type="submit">Salvar</button>
+      </form>
 
       <h2>Transações</h2>
       <ul>
