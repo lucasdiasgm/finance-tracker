@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 
 const API = "http://127.0.0.1:8000";
+const FORM_VAZIO = { descricao: "", valor: "", data: "", categoria_id: "" };
 
 export default function App() {
   const [categorias, setCategorias] = useState([]);
   const [transacoes, setTransacoes] = useState([]);
   const [erro, setErro] = useState("");
-  const [form, setForm] = useState({
-    descricao: "",
-    valor: "",
-    data: "",
-    categoria_id: "",
-  });
+  const [form, setForm] = useState(FORM_VAZIO);
+  const [editandoId, setEditandoId] = useState(null);
 
   async function carregar() {
     try {
@@ -39,11 +36,27 @@ export default function App() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
+  function iniciarEdicao(t) {
+    setEditandoId(t.id);
+    setForm({
+      descricao: t.descricao,
+      valor: t.valor,
+      data: t.data,
+      categoria_id: String(t.categoria_id),
+    });
+  }
+
+  function cancelarEdicao() {
+    setEditandoId(null);
+    setForm(FORM_VAZIO);
+  }
+
   async function enviar(e) {
     e.preventDefault();
     setErro("");
-    const resposta = await fetch(`${API}/transacoes`, {
-      method: "POST",
+    const url = editandoId ? `${API}/transacoes/${editandoId}` : `${API}/transacoes`;
+    const resposta = await fetch(url, {
+      method: editandoId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
@@ -55,7 +68,7 @@ export default function App() {
       setErro("Não foi possível salvar a transação.");
       return;
     }
-    setForm({ descricao: "", valor: "", data: "", categoria_id: "" });
+    cancelarEdicao();
     carregar();
   }
 
@@ -67,6 +80,7 @@ export default function App() {
       setErro("Não foi possível excluir a transação.");
       return;
     }
+    if (id === editandoId) cancelarEdicao();
     carregar();
   }
 
@@ -75,7 +89,7 @@ export default function App() {
       <h1>Finance Tracker</h1>
       {erro && <p style={{ color: "red" }}>{erro}</p>}
 
-      <h2>Nova transação</h2>
+      <h2>{editandoId ? "Editar transação" : "Nova transação"}</h2>
       <form onSubmit={enviar} style={{ display: "grid", gap: 8 }}>
         <input name="descricao" placeholder="Descrição" value={form.descricao} onChange={mudar} required />
         <input name="valor" type="number" step="0.01" placeholder="Valor" value={form.valor} onChange={mudar} required />
@@ -86,7 +100,10 @@ export default function App() {
             <option key={c.id} value={c.id}>{c.nome}</option>
           ))}
         </select>
-        <button type="submit">Salvar</button>
+        <button type="submit">{editandoId ? "Atualizar" : "Salvar"}</button>
+        {editandoId && (
+          <button type="button" onClick={cancelarEdicao}>Cancelar</button>
+        )}
       </form>
 
       <h2>Transações</h2>
@@ -94,6 +111,7 @@ export default function App() {
         {transacoes.map((t) => (
           <li key={t.id} style={{ marginBottom: 6 }}>
             {t.data} - {t.descricao} ({nomeCategoria(t.categoria_id)}): R$ {t.valor}{" "}
+            <button onClick={() => iniciarEdicao(t)}>Editar</button>{" "}
             <button onClick={() => excluir(t.id)}>Excluir</button>
           </li>
         ))}
