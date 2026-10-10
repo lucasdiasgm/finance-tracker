@@ -1,4 +1,5 @@
 from datetime import date
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlalchemy import func, select
@@ -10,6 +11,12 @@ from app.database import Base, engine, get_db
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
