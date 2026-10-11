@@ -1,1 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Lexend", ui-sans-serif, system-ui, sans-serif;
+
+  --color-lagoa-50: #eef7f6;
+  --color-lagoa-100: #d3ece9;
+  --color-lagoa-700: #0f766e;
+  --color-lagoa-800: #0b5e58;
+
+  --color-terracota-100: #fbe7e1;
+  --color-terracota-500: #e07a5f;
+  --color-terracota-700: #b5523a;
+
+  --color-areia: #f6f1e9;
+  --color-tinta: #1f2933;
+}

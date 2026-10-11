@@ -5,7 +5,7 @@ const API = "http://127.0.0.1:8000";
 const FORM_VAZIO = { descricao: "", valor: "", data: "", categoria_id: "" };
 const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 const CAMPO =
-  "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-200";
+  "w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-tinta focus:border-lagoa-700 focus:outline-none focus:ring-2 focus:ring-lagoa-100";
 
 function formatarValor(valor) {
   return Number(valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -111,11 +111,11 @@ export default function App() {
     : [];
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800">
-      <header className="bg-violet-600 text-white shadow">
+    <div className="min-h-screen bg-areia text-tinta">
+      <header className="bg-lagoa-700 text-white shadow">
         <div className="mx-auto max-w-5xl px-4 py-6">
           <h1 className="text-2xl font-bold">Finance Tracker</h1>
-          <p className="text-sm text-violet-100">Controle simples das suas finanças pessoais</p>
+          <p className="text-sm text-lagoa-100">Controle simples das suas finanças pessoais</p>
         </div>
       </header>
 
@@ -143,7 +143,7 @@ export default function App() {
               </select>
               <button
                 type="submit"
-                className="w-full rounded-md bg-violet-600 py-2 text-sm font-medium text-white hover:bg-violet-700"
+                className="w-full rounded-md bg-lagoa-700 py-2 text-sm font-medium text-white hover:bg-lagoa-800"
               >
                 {editandoId ? "Atualizar" : "Salvar"}
               </button>
@@ -151,7 +151,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={cancelarEdicao}
-                  className="w-full rounded-md border border-slate-300 py-2 text-sm hover:bg-slate-50"
+                  className="w-full rounded-md border border-stone-300 py-2 text-sm hover:bg-stone-50"
                 >
                   Cancelar
                 </button>
@@ -166,7 +166,7 @@ export default function App() {
                 <select
                   value={mes}
                   onChange={(e) => setMes(Number(e.target.value))}
-                  className="rounded-md border border-slate-300 px-2 py-1 text-sm"
+                  className="rounded-md border border-stone-300 px-2 py-1 text-sm"
                 >
                   {MESES.map((nome, i) => (
                     <option key={nome} value={i + 1}>{nome}</option>
@@ -176,13 +176,13 @@ export default function App() {
                   type="number"
                   value={ano}
                   onChange={(e) => setAno(Number(e.target.value))}
-                  className="w-20 rounded-md border border-slate-300 px-2 py-1 text-center text-sm"
+                  className="w-20 rounded-md border border-stone-300 px-2 py-1 text-center text-sm"
                 />
               </div>
             </div>
 
-            <p className="text-sm text-slate-500">Total gasto</p>
-            <p className="mb-4 text-3xl font-bold text-violet-700">
+            <p className="text-sm text-stone-500">Total gasto</p>
+            <p className="mb-4 text-3xl font-bold text-terracota-700">
               {formatarValor(resumo?.total ?? 0)}
             </p>
 
@@ -193,12 +193,12 @@ export default function App() {
                     <XAxis dataKey="nome" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip formatter={(valor) => formatarValor(valor)} />
-                    <Bar dataKey="total" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="total" fill="#e07a5f" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <p className="py-10 text-center text-sm text-slate-400">Sem transações neste mês.</p>
+              <p className="py-10 text-center text-sm text-stone-400">Sem transações neste mês.</p>
             )}
           </section>
         </div>
@@ -208,7 +208,7 @@ export default function App() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500">
+                <tr className="border-b border-stone-200 text-stone-500">
                   <th className="py-2">Data</th>
                   <th className="py-2">Descrição</th>
                   <th className="py-2">Categoria</th>
@@ -219,26 +219,26 @@ export default function App() {
               <tbody>
                 {transacoes.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="py-6 text-center text-slate-400">
+                    <td colSpan={5} className="py-6 text-center text-stone-400">
                       Nenhuma transação neste período.
                     </td>
                   </tr>
                 )}
                 {transacoes.map((t) => (
-                  <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr key={t.id} className="border-b border-stone-100 hover:bg-lagoa-50">
                     <td className="py-2">{formatarData(t.data)}</td>
                     <td className="py-2">{t.descricao}</td>
                     <td className="py-2">
-                      <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-700">
+                      <span className="rounded-full bg-lagoa-100 px-2 py-0.5 text-xs text-lagoa-800">
                         {nomeCategoria(t.categoria_id)}
                       </span>
                     </td>
-                    <td className="py-2 text-right font-medium">{formatarValor(t.valor)}</td>
+                    <td className="py-2 text-right font-medium tabular-nums">{formatarValor(t.valor)}</td>
                     <td className="space-x-3 py-2 text-right">
-                      <button onClick={() => iniciarEdicao(t)} className="text-violet-600 hover:underline">
+                      <button onClick={() => iniciarEdicao(t)} className="text-lagoa-700 hover:underline">
                         Editar
                       </button>
-                      <button onClick={() => excluir(t.id)} className="text-red-600 hover:underline">
+                      <button onClick={() => excluir(t.id)} className="text-red-700 hover:underline">
                         Excluir
                       </button>
                     </td>
