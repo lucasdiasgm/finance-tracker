@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const API = "http://127.0.0.1:8000";
 const FORM_VAZIO = { descricao: "", valor: "", data: "", categoria_id: "" };
@@ -166,6 +167,21 @@ export default function App() {
       {resumo && (
         <div>
           <h2>Resumo do mês: R$ {resumo.total}</h2>
+                    <div style={{ width: "100%", height: 250 }}>
+            <ResponsiveContainer>
+              <BarChart
+                data={Object.entries(resumo.por_categoria).map(([nome, total]) => ({
+                  nome,
+                  total: Number(total),
+                }))}
+              >
+                <XAxis dataKey="nome" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="total" fill="#8b5cf6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
           <ul>
             {Object.entries(resumo.por_categoria).map(([nome, total]) => (
               <li key={nome}>
